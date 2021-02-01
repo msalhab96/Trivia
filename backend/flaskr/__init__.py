@@ -23,7 +23,6 @@ def create_app(test_config=None):
   @app.route('/categories', methods=['GET'])
   def get_categories():
     all_categories = [category.format() for category in Category.query.all()]
-    print("----------------------")
     print(all_categories)
     return jsonify({"categories": all_categories})
 
@@ -61,8 +60,6 @@ def create_app(test_config=None):
   @app.route('/questions', methods=["POST"])
   def add_question():
     data = request.get_json()
-    print("---------------------")
-    print(data)
     if 'searchTerm' in data:
       search_term = data['searchTerm']
       all_question = Question.query.filter(Question.question.ilike("%" + search_term + "%")).all()
@@ -96,32 +93,21 @@ def create_app(test_config=None):
       QUESTION.insert()
       return jsonify({"Success": True, 'Message': "Question Added!"})
 
-  '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
 
-  TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
-  '''
   @app.route('/categories/<int:cat_id>/questions')
   def get_questions_cat_based(cat_id):
-    targeted_cat = Category.query.filter_by(id= cat_id).one_or_none()
-    if targeted_cat:
-      questions_in_cat = Question.query.filter_by(category=targeted_cat.type).all()
-      result = {'Success': True,
-                'questions': [question.format() for question in questions_in_cat],
-                'total_questions': Question.query.count(),
-                'current_category': targeted_cat.type
-                }
-      return jsonify(result)
-    else:
-      abort(404)
+    questions_in_cat = Question.query.filter_by(category=cat_id).all()
+    result = {'Success': True,
+              'questions': [question.format() for question in questions_in_cat],
+              'total_questions': Question.query.count(),
+              'current_category': Category.query.filter_by(id=cat_id).one().type
+              }
+    return jsonify(result)
 
   @app.route('/quizzes', methods=["POST"])
   def get_play_question():
     data = request.get_json()
-    previous_questions = data.get('previous_questions')
+    previous_questions = data.get('previous_questions', [])
     quiz_category = data.get('quiz_category')
     if quiz_category == "All":
       all_question = Question.query.all()
