@@ -33,9 +33,9 @@ class TriviaTestCase(unittest.TestCase):
         result = self.client().get('/questions?page=1')
         self.assertEqual(result.status_code, 200)
     
-    def test_delete_question1(self):
+    def test_delete_question(self):
         
-        result = self.client().delete('/questions/18')
+        result = self.client().delete('/questions/20')
         self.assertEqual(result.status_code, 200)
 
     def test_delete_question_error(self):
@@ -54,7 +54,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
 
     def test_get_play_question(self):
-        result = self.client().post('/quizzes', json={"previous_questions":[], "quiz_category": 4})
+        result = self.client().post('/quizzes', json={"previous_questions":[], "quiz_category": {'type': 'Art', 'id':4}})
         self.assertEqual(result.status_code, 200)
 # Make the tests conveniently executable
 if __name__ == "__main__":
