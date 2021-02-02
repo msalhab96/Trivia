@@ -97,18 +97,80 @@ GET '/categories' endpoint
 GET '/questions' endpoint
 
 - Fetches a dictionary of questions where the keys can be described as follows:
-| Key  | Describtion |
-| ------------- | ------------- |
-| Success  | the status in which the proccess succeed or not|
-| questions  | a list of questions in the page  |
-| total_questions  | the number of all questions  |
-| categories  | the categories in all questions  |
+
+ - Success  : (boolian) the status in which the proccess succeed or not
+ - questions  : a list of questions in the page  
+ - total_questions  : the number of all questions  
+ - categories  : the categories in all questions  
 
 here is an output sample
 {"Success":true,"categories":["Science","Art","Geography","History","Entertainment","Sports"],"current_category":null,"questions":[{"answer":"Maya Angelou","category":4,"difficulty":2,"id":5,"question":"Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"},{"answer":"Muhammad Ali","category":4,"difficulty":1,"id":9,"question":"What boxer's original name is Cassius Clay?"},{"answer":"Apollo 13","category":5,"difficulty":4,"id":2,"question":"What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"},{"answer":"Tom Cruise","category":5,"difficulty":4,"id":4,"question":"What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"},{"answer":"Edward Scissorhands","category":5,"difficulty":3,"id":6,"question":"What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"},{"answer":"Brazil","category":6,"difficulty":3,"id":10,"question":"Which is the only team to play in every soccer World Cup tournament?"},{"answer":"Uruguay","category":6,"difficulty":4,"id":11,"question":"Which country won the first ever soccer World Cup in 1930?"},{"answer":"George Washington Carver","category":4,"difficulty":2,"id":12,"question":"Who invented Peanut Butter?"},{"answer":"Lake Victoria","category":3,"difficulty":2,"id":13,"question":"What is the largest lake in Africa?"},{"answer":"The Palace of Versailles","category":3,"difficulty":3,"id":14,"question":"In which royal palace would you find the Hall of Mirrors?"}],"total_questions":19}
 
 ```
 
+```
+GET '/categories/<cat_id>/questions' endpoint
+
+- Fetches a dictionary of questions belong to a certain category_id given by url, the returned dictionary's keys can be described as follow:
+
+ - Success  : (boolian) the status in which the proccess succeed or not
+ - questions  : a list of questions in the targeted category 
+ - total_questions  : the number of all questions  
+ - currentCategory  : the targeted category
+
+heres the output of /categories/1/questions:
+{"Success":true,"current_category":"Science","questions":[{"answer":"The Liver","category":1,"difficulty":4,"id":20,"question":"What is the heaviest organ in the human body?"},{"answer":"Alexander Fleming","category":1,"difficulty":3,"id":21,"question":"Who discovered penicillin?"},{"answer":"Blood","category":1,"difficulty":4,"id":22,"question":"Hematology is a branch of medicine involving the study of what?"}],"total_questions":19}
+```
+
+
+```
+DELETE '/questions/<question_id>' endpoint
+this end point is used to delete a certain question by its ID 
+
+for example requesting the endpoint /questions/16 will delete the question with ID 16 and the returned dictionary will be as follow 
+{"Message":"item deleted!","Success":true}
+```
+
+
+```
+POST '/questions' endpoint 
+
+used in either to add a question or to search for the questions that contains the given term.
+
+if you want to search for all the questions contains a certain term the sent dictionary/json should contains the key 'searchTerm' and the value the term you want to llok for
+for example if you would like to search for all the question has the term 'AD' in it you should send the following 
+{"searchTerm":"AD"} and the result will be like this 
+{"Success":true,"currentCategory":null,"questions":[{"answer":"Edward Scissorhands","category":5,"difficulty":3,"id":6,"question":"What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"},{"answer":"Jackson Pollock","category":2,"difficulty":2,"id":19,"question":"Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"}],"totalQuestions":18}
+
+and if you would like to add a question you'r dictionary should contains the following keys
+ - question: (string) the question you would like to add 
+ - answer: (string) the answer of the question you would like to add 
+ - difficulty: (integer) the level of difficulty of the question you would like to add 
+ - category: (integer) the category's id of the question you would like to add 
+
+ for example if you wwould like to add the quesion 'are you alive?' with answer 'yes' with category 3 and difficulty 1 you should embedd them in the dictionary as follow 
+
+ {
+     'question' : 'are you alive?'
+     'answer' : 'yes'
+     'difficulty' : '3'
+     'category' : '1'
+ }
+```
+
+```
+
+POST '/quizzes' endpoint 
+it's used to fitch a random question from a certain category by specifying it in the body of the request or 
+or from all categories by using the word 'All' in the category place, and also with providing the question to not include by passing the text of those question 
+
+for example if you want to get a random question from All categories you should use the following dictionary 
+
+{
+    'previous_questions' : [],
+    'quiz_category': 'All'
+}
+```
 ## Testing
 To run the tests, run
 ```

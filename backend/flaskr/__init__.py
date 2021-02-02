@@ -24,7 +24,7 @@ def create_app(test_config=None):
   def get_categories():
     all_categories = [category.format() for category in Category.query.all()]
     print(all_categories)
-    return jsonify({"categories": all_categories})
+    return jsonify({"Success": True, "categories": all_categories})
 
 
   @app.route('/questions', methods=['GET'])
@@ -110,8 +110,11 @@ def create_app(test_config=None):
   @app.route('/quizzes', methods=["POST"])
   def get_play_question():
     data = request.get_json()
+    print('------------------------------------')
+    print(data)
+    print('------------------------------------')
     previous_questions = data.get('previous_questions', [])
-    quiz_category = data.get('quiz_category')
+    quiz_category = data.get('quiz_category')['id']
     if quiz_category == "All":
       all_question = Question.query.all()
     else:

@@ -25,6 +25,10 @@ class QuizView extends Component {
       url: `/categories`, //TODO: update request URL
       type: "GET",
       success: (result) => {
+        console.log(result.categories)
+        console.log(result)
+        console.log('---------------------------------------')
+
         this.setState({ categories: result.categories })
         return;
       },
@@ -45,7 +49,7 @@ class QuizView extends Component {
 
   getNextQuestion = () => {
     const previousQuestions = [...this.state.previousQuestions]
-    if(this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.id) }
+    if(this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.question) }
 
     $.ajax({
       url: '/quizzes', //TODO: update request URL
@@ -111,8 +115,8 @@ class QuizView extends Component {
                       key={id}
                       value={id}
                       className="play-category"
-                      onClick={() => this.selectCategory({type:this.state.categories[id], id})}>
-                      {this.state.categories[id]}
+                      onClick={() => this.selectCategory({type:this.state.categories[id].type, id})}>
+                      {this.state.categories[id].type}
                     </div>
                   )
                 })}
