@@ -91,7 +91,10 @@ def create_app(test_config=None):
                           category = category,
                           difficulty= difficulty)
       QUESTION.insert()
-      return jsonify({"Success": True, 'Message': "Question Added!"})
+      return jsonify({
+                      "Success": True,
+                      "Message": "Question Added!"
+                      })
 
 
   @app.route('/categories/<int:cat_id>/questions')
@@ -131,7 +134,9 @@ def create_app(test_config=None):
     return jsonify({"Success": False, "Error": 404, "message": "resource not found"}), 404
   @app.errorhandler(422)
   def get_unprocessable_entity(error):
-    return jsonify({"Success": False, "Error": 422, "message": "unaccesable entity"}), 422
+    return jsonify({"Success": False,
+                    "Error": 422,
+                    "message": "unaccesable entity"}), 422
   return app
 
   
