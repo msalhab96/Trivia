@@ -89,7 +89,7 @@ def create_app(test_config=None):
         abort(404)
       QUESTION = Question(question = question,
                           answer = answer,
-                          category = category,
+                          category = 1+int(category),
                           difficulty= difficulty)
       QUESTION.insert()
       return jsonify({
@@ -98,17 +98,22 @@ def create_app(test_config=None):
                       })
 
 
-  @app.route('/categories/<int:cat_id>/questions')
+  @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
   def get_questions_cat_based(cat_id):
-    cat_id = 1 + int(cat_id)
-    in_categories = Category.query.filter_by(id=cat_id).one_or_none()
-    if not in_categories:
+    category = Category.query.get(cat_id + 1)
+    if not category:
       abort(404)
-    questions_in_cat = Question.query.filter_by(category=cat_id).all()
+    questions_in_cat = Question.query.filter_by(category=category.id).all()
+    questions_in_cat = [question.format() for question in questions_in_cat]
+    question_results = []
+    for question in questions_in_cat:
+      element = question
+      element['category'] += 1
+      question_results.append(element)
     result = {'Success': True,
-              'questions': [question.format() for question in questions_in_cat],
+              'questions': question_results,
               'total_questions': len(questions_in_cat),
-              'current_category': Category.query.filter_by(id=cat_id).one().type
+              'current_category': category.type
               }
     return jsonify(result)
 
@@ -116,14 +121,15 @@ def create_app(test_config=None):
   def get_play_question():
     data = request.get_json()
     previous_questions = data.get('previous_questions', [])
-    quiz_category = data.get('quiz_category')['id']
-    if quiz_category == "All":
+    quiz_category = (data.get('quiz_category')['id'])
+    if data.get('quiz_category')['type'] == "click":
       all_question = Question.query.all()
     else:
       is_none = Category.query.filter_by(id=quiz_category).one_or_none()
+      quiz_category = 1 + int(quiz_category)
       if not is_none:
         abort(404)
-      all_question = Question.query.filter_by(category=quiz_category)
+      all_question = Question.query.filter_by(category=quiz_category).all()
     to_choose = [item.format() for item in all_question \
                 if not (item.question in previous_questions)]
     if len(to_choose) != 0:
@@ -136,7 +142,6 @@ def create_app(test_config=None):
               'Success': True,
               "question": None,
               }
-              
     return jsonify(result)
 
   @app.errorhandler(404)
