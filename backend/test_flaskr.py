@@ -41,7 +41,7 @@ class TriviaTestCase(unittest.TestCase):
         result = self.client().get('/categories')
         self.assertEqual(result.status_code, 200)
 
-    def test_get_categories(self):
+    def test_get_categories_error(self):
         result = self.client().get('/categs')
         self.assertEqual(result.status_code, 404)
 
