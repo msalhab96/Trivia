@@ -105,13 +105,8 @@ def create_app(test_config=None):
       abort(404)
     questions_in_cat = Question.query.filter_by(category=category.id).all()
     questions_in_cat = [question.format() for question in questions_in_cat]
-    question_results = []
-    for question in questions_in_cat:
-      element = question
-      element['category'] += 1
-      question_results.append(element)
     result = {'Success': True,
-              'questions': question_results,
+              'questions': questions_in_cat,
               'total_questions': len(questions_in_cat),
               'current_category': category.type
               }
