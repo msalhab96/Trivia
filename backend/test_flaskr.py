@@ -28,13 +28,20 @@ class TriviaTestCase(unittest.TestCase):
     def tearDown(self):
         """Executed after reach test"""
         pass
-
-    def test_get_categories(self):
-        result = self.client().get('/questions?page=1')
+    
+    def test_get_question(self):
+        result = self.client().get('/questions?page=0')
         self.assertEqual(result.status_code, 200)
     
+    def test_get_question_error(self):
+        result = self.client().get('/questions?page=1000')
+        self.assertEqual(result.status_code, 404)
+    
+    def test_get_categories(self):
+        result = self.client().get('/categories')
+        self.assertEqual(result.status_code, 200)
+
     def test_delete_question(self):
-        
         result = self.client().delete('/questions/20')
         self.assertEqual(result.status_code, 200)
 
@@ -53,9 +60,17 @@ class TriviaTestCase(unittest.TestCase):
         result = self.client().get('/categories/1/questions')
         self.assertEqual(result.status_code, 200)
 
+    def test_get_questions_cat_based_error(self):
+        result = self.client().get('/categories/10000/questions')
+        self.assertEqual(result.status_code, 404)
+
     def test_get_play_question(self):
-        result = self.client().post('/quizzes', json={"previous_questions":[], "quiz_category": {'type': 'Art', 'id':4}})
+        result = self.client().post('/quizzes', json={"previous_questions":[], "quiz_category": {"type": "Art", "id":"4"}})
         self.assertEqual(result.status_code, 200)
+
+    def test_get_play_question_error(self):
+        result = self.client().post('/quizzes', json={"previous_questions":[], "quiz_category": {'type': 'Art', 'id':'514'}})
+        self.assertEqual(result.status_code, 404)
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

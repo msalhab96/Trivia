@@ -36,13 +36,15 @@ def create_app(test_config=None):
     all_categories = [category.type for category in Category.query.all()]
     if len(all_categories) == 0:
       abort(404)
+    if len(targeted_questions) == 0:
+      abort(404)
     else:
       results= {
                 "Success": True,
                 "questions" : [question.format() for question in targeted_questions],
                 "total_questions" : len(all_questions),
                 "categories" : all_categories,
-                "current_category" : None # What Does this field mean!
+                "current_category" : [question.category for question in targeted_questions]
                 }
       return jsonify(results)
 
@@ -51,7 +53,7 @@ def create_app(test_config=None):
     question = Question.query.filter_by(id=question_id).one_or_none()
     if question:
       question.delete()
-      return jsonify({"Success": True, 'Message': 'item deleted!'})
+      return jsonify({"Success": True, 'Message': f'item {id} deleted!'})
     else:
       abort(404)
 
@@ -65,7 +67,7 @@ def create_app(test_config=None):
       result = {'Success': True,
                 'questions': [question.format() for question in all_question],
                 'totalQuestions': Question.query.count(),
-                'currentCategory': None # What!
+                'currentCategory': None 
                 }
       return jsonify(result)
     else:
@@ -98,10 +100,14 @@ def create_app(test_config=None):
 
   @app.route('/categories/<int:cat_id>/questions')
   def get_questions_cat_based(cat_id):
+    cat_id = 1 + int(cat_id)
+    in_categories = Category.query.filter_by(id=cat_id).one_or_none()
+    if not in_categories:
+      abort(404)
     questions_in_cat = Question.query.filter_by(category=cat_id).all()
     result = {'Success': True,
               'questions': [question.format() for question in questions_in_cat],
-              'total_questions': Question.query.count(),
+              'total_questions': len(questions_in_cat),
               'current_category': Category.query.filter_by(id=cat_id).one().type
               }
     return jsonify(result)
@@ -114,18 +120,23 @@ def create_app(test_config=None):
     if quiz_category == "All":
       all_question = Question.query.all()
     else:
+      is_none = Category.query.filter_by(id=quiz_category).one_or_none()
+      if not is_none:
+        abort(404)
       all_question = Question.query.filter_by(category=quiz_category)
-    to_choose = [item.format() for item in all_question if not (item.question in previous_questions)]
+    to_choose = [item.format() for item in all_question \
+                if not (item.question in previous_questions)]
     if len(to_choose) != 0:
-      result ={
+      result = {
               'Success': True,
               "question": random.choice(to_choose),
               }
     else:
-      result ={
+      result = {
               'Success': True,
               "question": None,
               }
+              
     return jsonify(result)
 
   @app.errorhandler(404)
@@ -136,8 +147,14 @@ def create_app(test_config=None):
     return jsonify({"Success": False,
                     "Error": 422,
                     "message": "unaccesable entity"}), 422
+  @app.errorhandler(500)
+  def get_unprocessable_entity(error):
+    return jsonify({"Success": False,
+                    "Error": 500,
+                    "message": "internal server error!"}), 500
+  @app.errorhandler(400)
+  def get_unprocessable_entity(error):
+    return jsonify({"Success": False,
+                    "Error": 400,
+                    "message": "Bad Request!"}), 400
   return app
-
-  
-
-    
