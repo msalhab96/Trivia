@@ -94,7 +94,7 @@ def create_app(test_config=None):
       QUESTION.insert()
       return jsonify({
                       "Success": True,
-                      "Message": f"Question {QUESTION.id} Added!"
+                      "Message": "Question Added!"
                       })
 
 
