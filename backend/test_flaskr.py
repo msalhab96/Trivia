@@ -41,6 +41,10 @@ class TriviaTestCase(unittest.TestCase):
         result = self.client().get('/categories')
         self.assertEqual(result.status_code, 200)
 
+    def test_get_categories(self):
+        result = self.client().get('/categs')
+        self.assertEqual(result.status_code, 404)
+
     def test_delete_question(self):
         result = self.client().delete('/questions/20')
         self.assertEqual(result.status_code, 200)
@@ -54,6 +58,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
     def test_add_question_error(self):
         result = self.client().post('/questions', json={"question": "are you alive?"})
+        self.assertEqual(result.status_code, 404)
+
+    def test_search(self):
+        result = self.client().post('/questions', json={"searchTerm": "are "})
+        self.assertEqual(result.status_code, 200)
+
+    def test_search_error(self):
+        result = self.client().post('/questions', json={"searchterm": "are "})
         self.assertEqual(result.status_code, 404)
 
     def test_get_questions_cat_based(self):
